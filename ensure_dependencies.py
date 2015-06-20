@@ -16,7 +16,10 @@ import subprocess
 import urlparse
 import argparse
 
-from collections import OrderedDict
+try:
+  from collections import OrderedDict
+except ImportError:
+  from ordereddict import OrderedDict
 from ConfigParser import RawConfigParser
 
 USAGE = """
@@ -98,7 +101,8 @@ class Git():
 
   def get_revision_id(self, repo, rev="HEAD"):
     command = ["git", "rev-parse", "--revs-only", rev + '^{commit}']
-    return subprocess.check_output(command, cwd=repo).strip()
+    result = subprocess.Popen(command,  stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=repo).communicate()[0]
+    return result.strip()
 
   def pull(self, repo):
     # Fetch tracked branches, new tags and the list of available remote branches
